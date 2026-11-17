@@ -3,7 +3,12 @@ import java.awt.*;// Manages the layout and styling tools.
 import javax.swing.table.DefaultTableModel;//Inside a sub-package hence is independently imported.
 import java.awt.event.ActionEvent;// Handles user interactions
 import java.awt.event.ActionListener;//same
-import java.util.List;//Enables us to read Tallam's list later.
+// import java.util.List;//Enables us to read Tallam's list later.
+// import java.time.LocalDate;
+// import java.time.format.DateTimeParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+
 
 public class ClinicForm extends JFrame{
     private JTextField name, phone, village, regDate, nextVisit, search;
@@ -115,6 +120,9 @@ public class ClinicForm extends JFrame{
         btnAdd.addActionListener(new ActionListener() {
             @Override 
             public void actionPerformed(ActionEvent e){
+                if(!isInputValid()){
+                    return;
+                }
                 JOptionPane.showMessageDialog(ClinicForm.this, "Ready to save: " + name.getText());
 
             }
@@ -124,6 +132,9 @@ public class ClinicForm extends JFrame{
         btnUpdate.addActionListener(new ActionListener() {
             @Override 
             public void actionPerformed(ActionEvent e){
+                if(!isInputValid()){
+                    return;
+                }
                 JOptionPane.showMessageDialog(ClinicForm.this, "Ready to update selected patient.");
             }
         });
@@ -165,6 +176,41 @@ public class ClinicForm extends JFrame{
         return panel;
 
     }
+private boolean isInputValid() {
+        // 1. Grab the text from YOUR JTextFields and remove extra spaces
+        String nameText = name.getText().trim();
+        String phoneText = phone.getText().trim();
+        String villageText = village.getText().trim();
+        String regDateText = regDate.getText().trim();
+        String nextVisitText = nextVisit.getText().trim();
 
+        // CHECK 1: Are any fields blank?
+        if (nameText.isEmpty() || phoneText.isEmpty() || villageText.isEmpty() || regDateText.isEmpty() || nextVisitText.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all fields before saving.", "Missing Information", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
 
+        // CHECK 2: Is the phone number realistic? (Allows optional '+' at start, followed by 9 to 13 digits)
+        if (!phoneText.matches("^\\+?[0-9]{9,13}$")) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid phone number (e.g., 0712345678 or +254712345678).", "Invalid Phone", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        // CHECK 3 & 4: Are the dates formatted properly (YYYY-MM-DD) AND in logical order?
+        try {
+            LocalDate parsedRegDate = LocalDate.parse(regDateText);
+            LocalDate parsedNextVisit = LocalDate.parse(nextVisitText);
+
+            if (parsedNextVisit.isBefore(parsedRegDate)) {
+                JOptionPane.showMessageDialog(this, "Next Visit Date cannot be earlier than the Registration Date.", "Date Logic Error", JOptionPane.WARNING_MESSAGE);
+                return false;
+            }
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Dates must follow the YYYY-MM-DD format (e.g., 2026-11-17).", "Invalid Date Format", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        // If it survived all 4 checks, the input is valid!
+        return true;
+    }
 }
