@@ -16,23 +16,3 @@ The application is built using a clean, robust Object-Oriented Programming (OOP)
 * **Model (`Patient.java`):** Encapsulates patient data fields (ID, name, patient type, phone, village, registration date, last visit, next visit, and status).
 * **Database & Persistence (`Db.java` & `PatientDAO.java`):** Connects to a MySQL database via JDBC and executes optimized SQL queries (`INSERT`, `UPDATE`, `DELETE`, search filters, and date-comparison queries like `WHERE next_visit < CURDATE()`).
 * **User Interface (`ClinicForm.java`):** Built using Java Swing (`JFrame`, `JTable`, dropdowns, and custom cell renderers) to provide an intuitive, color-coded visual workflow (highlighting overdue patients in red and those due within 7 days in orange).
-
-## Run the application
-
-1. Install MySQL and the MySQL Connector/J driver.
-2. Create the database and table by running `mysql -u root -p < schema.sql`.
-3. If needed, set `CLINIC_DB_URL`, `CLINIC_DB_USER`, and `CLINIC_DB_PASSWORD` to configure the connection. Defaults are `jdbc:mysql://localhost:3306/clinic_tracker`, `root`, and an empty password.
-4. Compile from the project directory:
-
-   ```sh
-   mkdir -p out
-   javac -d out Db.java Patient.java PatientDAO.java src/ClinicForm.java src/App.java
-   ```
-
-5. Run with the MySQL Connector/J JAR on the classpath:
-
-   ```sh
-   java -cp "out:mysql-connector-j.jar" App
-   ```
-
-Dates in the form must use `YYYY-MM-DD`. Select a table row to edit or delete it. Search checks patient name, phone number, and village. The defaulter view shows non-completed patients whose next visit is before today; overdue rows are highlighted red and visits due within seven days are highlighted orange.
